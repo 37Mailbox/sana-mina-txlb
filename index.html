@@ -1033,8 +1033,8 @@ function startChapter(label) {
     ]; // <--- 确保这行 ] 依然是整个数组的结尾
 
     
-    /* =========================================
-       3. 核心引擎
+ /* =========================================
+       3. 核心引擎 (修复版：解决点击无效问题)
        ========================================= */
     
     let isTyping = false, typeTimer = null, fullText = "";
@@ -1044,14 +1044,15 @@ function startChapter(label) {
     let skipInterval = null;
     let longPressTimer = null;
 
-    window.onload = () => {
-        // 先挂载监听器，保证游戏能点
+    // === 【核心修复】初始化函数：统一挂载所有功能 ===
+    function initGame() {
         const container = document.getElementById('game-container');
         let isTouch = false;
 
+        // 1. 定义交互处理函数
         const handleInteraction = (e) => {
             const target = e.target;
-            // 防误触保护
+            // 防误触保护：如果点到了按钮、菜单等，就不触发剧情推进
             if (target.closest('button') || target.closest('.chapter-card') || 
                 target.closest('.lib-branch-btn') || target.closest('.settings-box') || 
                 target.closest('.choice-btn') || target.closest('.slot-card') ||
@@ -1066,12 +1067,14 @@ function startChapter(label) {
                 stopSkip();
             } else {
                 const target = e.target;
+                // 再次检查防误触
                 if (!target.closest('button') && !target.closest('.chapter-card') && !target.closest('.end-card') && !target.closest('.lib-branch-btn') && !target.closest('.setting-slider') && !target.closest('.choice-btn')) {
                     handleClick();
                 }
             }
         };
 
+        // 2. 挂载点击事件监听器 (鼠标 + 触摸)
         container.addEventListener('mousedown', (e) => { 
             if(isTouch) return;
             if(e.button===0) handleInteraction(e); 
@@ -1090,40 +1093,44 @@ function startChapter(label) {
             handleEnd(e);
             setTimeout(() => isTouch = false, 500);
         });
-// === 【新增】资源预加载 ===
+
+        // 3. 资源预加载
         const preloadAssets = () => {
             const images = [];
-            // 1. 提取剧本中的背景图
+            // 提取背景图
             script.forEach(line => {
                 if (line.bg && !line.bg.startsWith('#')) images.push(line.bg);
-                // 如果你的 script 里将来有 char 属性指定图片路径，也要加在这里
             });
-            // 2. 提取 CSS 中的立绘 (手动指定，因为无法直接读 CSS)
+            // 提取立绘
             images.push(
                 'https://via.placeholder.com/400x800/f9e4ff/9d72b0?text=Sana',
                 'https://via.placeholder.com/400x800/c4ffdd/56ab83?text=Mina'
             );
-            
-            // 开始静默加载
+            // 开始加载
             images.forEach(src => {
                 const img = new Image();
                 img.src = src;
             });
         };
         preloadAssets();
-        // === 预加载结束 ===
 
+        // 4. 读取存档并全屏适配
+        loadSystemData();
+        resizeGame();
         
-        // 【插入这两行】
-        loadSystemData(); // 读取存档和音量设置
-        resizeGame();     // 立即执行一次全屏适配
-        
+        // 5. 自动保存监听
         window.addEventListener('beforeunload', () => {
              if (document.getElementById('title-screen').style.display === 'none') performSave(1);
         });
-    };
+    }
 
-// === 强力适配版 resizeGame ===
+    // === 【关键】使用 DOMContentLoaded 确保代码尽早运行，不用等图片下载完 ===
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initGame);
+    } else {
+        initGame();
+    }
+
 function resizeGame() {
     const container = document.getElementById('game-container');
     
