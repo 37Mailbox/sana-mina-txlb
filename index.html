@@ -622,7 +622,11 @@ function startChapter(label) {
         // === Bad Ending: 路人 ===
         { label: "bad_end", mode: "nvl", text: "算了，只是偶然刷到的一个账号而已。凑崎纱夏关上屏幕，拿起钥匙冲出了房门。" },
         { mode: "nvl", text: "她那天玩到很晚才回家，路过名井南的窗前的时候，习惯性地抬头，但窗子已经暗下去了。" },
-        { mode: "nvl", text: "“想也是这样。”凑崎纱夏轻轻地叹了口气，大概她和南终究是性格不太合，以后还是少去惹南讨厌比较好。" },
+        { mode: "nvl", text: "想也是这样。" },
+        { mode: "nvl", text: "凑崎有时候会觉得名井南大概是不喜欢她，但又无法抑制地把视线落在她的身上。" },
+        { mode: "nvl", text: "美丽而沉静的青梅竹马，会用湿润而黑白分明的眼睛望向她的名井南。这样的南，也会有不为人知的一面吗？也会对谁产生占有的情感吗？", bg: "mina2.jpg"  },
+        { mode: "nvl", text: "也会，知道她那个吵吵闹闹的邻居，会在偶然刷到暧昧不明的少女身体时，想到的是她的脸吗？" },
+        { mode: "nvl", text: "会被讨厌的吧。凑崎纱夏轻轻地叹了口气，大概她和南终究是性格不太合，以后还是约束好自己多一点想法，少去惹南心烦比较好。" },
         { mode: "nvl", text: "【Bad Ending: 路人】" },
         { mode: "code", action: () => unlockEnding("bad_end") }, 
         { jump: "title_return" },
@@ -793,10 +797,10 @@ function startChapter(label) {
         { mode: "nvl", text: "名井南这才注意到凑崎纱夏压在她的身体上。她们都穿得很少，头发缠着头发，皮肤贴着皮肤，热气腾腾的体温全然无间隔地传过来，名井南也感觉到燥热难耐了。" },
 
         { mode: "nvl", text: "她向后缩了缩身体，却因为躺在床上的姿势避无可避。" },
-        { mode: "nvl", text: "凑崎纱夏的嘴唇终于落下来，于此同时的是她钻进自己睡衣里的手掌。" },
+        { mode: "nvl", text: "凑崎纱夏的嘴唇终于落下来，与此同时的是她钻进自己睡衣里的手掌。" },
         { mode: "nvl", text: "舌尖被急促地推着，卷着，吮吸着，名井南可怜地哼，却因为扭腰的动作把乳尖送进她的掌心。" },
         
-        { mode: "nvl", text: "被捏住了，名井南茫然地想，随后又被胸前湿热的触感而抑制不住地小声尖叫。" },
+        { mode: "nvl", text: "被捏住了，名井南茫然地想，随后又被胸前湿热的触感而抑制不住地小声尖叫。",bg: "sana_dream_1.jpg"},
         { mode: "nvl", text: "凑崎纱夏是否真的是小狗变的？名井南不合时宜地想到这个问题。她在她弯起眼睛露出那种没有人能够不心软的顽皮笑容时这样想过，但此刻凑崎纱夏的舌尖已经在吞吃她的乳肉，这个问题就无可避免地带上了色情的含义。" },
 
         { mode: "adv", name: "名井南", text: "“纱夏……纱糖……”", show: ["sana_dream"], focus: "sana_dream" },
@@ -809,7 +813,7 @@ function startChapter(label) {
         { mode: "nvl", text: "应该要回答的，名井南这样想着，但声音像卡在喉咙里一样发不出来。" },
         { mode: "nvl", text: "她只能抬起手，想要去抱凑崎纱夏，手却软绵绵的使不上力气，只是虚虚地搭在她的肩膀上。" },
 
-        { mode: "nvl", text: "凑崎纱夏的手开始往下移动了。缓慢的，试探的，指尖轻轻擦过她的小腹，又停在那里打转。" },
+        { mode: "nvl", text: "凑崎纱夏的手开始往下移动了。缓慢的，试探的，指尖轻轻擦过她的小腹，又停在那里打转。",bg: "sana_dream.jpg" },
         { mode: "adv", name: "凑崎纱夏", text: "“这里……”" },
         { mode: "nvl", text: "凑崎纱夏的声音带着笑意。" },
         { mode: "adv", name: "凑崎纱夏", text: "“南这里，已经湿成这样了。”" },
@@ -862,7 +866,7 @@ function startChapter(label) {
 
         { mode: "nvl", text: "凑崎纱夏将永远不会知道今天的事。" },
 
-        { mode: "nvl", text: "【Bad Ending: 独角戏】" }, // 我给这个结局起的名字，你可以改
+        { mode: "nvl", text: "【Bad Ending: 独角戏】" }, 
                 { mode: "code", action: () => unlockEnding("missed_opportunity") },
         { jump: "title_return" },
 
@@ -891,11 +895,13 @@ function startChapter(label) {
             mode: "adv", type: "choice",
             options: [
                 { text: "发送：“喜欢我的照片？”", next: "msg_like", effect: { love: 2, lust: 2 } }, // 原剧情
-                { text: "发送：“找到纱夏了。”", next: "bad_end_3", effect: { love: -5, lust: -5 } } // 作死选项
+                { text: "发送：“找到纱夏了。”", next: "bad_end_3", effect: { love: -5, lust: -5 } } // 暴露选项
             ]
         },
 
         { label: "bad_end_3", mode: "nvl", text: "发送出去的瞬间，名井南就后悔了。这听起来太像威胁了。", bgm: "stop"  },
+        { mode: "adv", name: "sana1229", text: "“你是谁？为什么会知道我的名字？？？”" },
+        { mode: "adv", name: "sana1229", text: "“是变态吗？一直缠着的话我会报警的！”" },
         { mode: "nvl", text: "几秒钟后，屏幕显示“对方已将您屏蔽”。" },
         { mode: "nvl", text: "【Bad Ending: 被吓跑的小狗】" },
         { jump: "title_return" },
@@ -969,13 +975,15 @@ function startChapter(label) {
         { mode: "nvl", text: "她从床上站起来，对着镜子端详自己的身体。" },
         { mode: "nvl", text: "她不想太过露骨，那样就失去了诱惑的意味，但又不能太过保守，毕竟她想看看凑崎纱夏会有什么反应。" },
         { mode: "nvl", text: "最终她决定还是穿着自己的睡裙，躺在床上，让裙摆自然地堆在大腿上，微微露出一点内裤的边缘。" },
-        { mode: "nvl", text: "她调整了一下灯光，让房间里只有一盏昏黄的床头灯亮着，拿起手机，试了几个角度。挑哪一张好呢" },
+        { mode: "nvl", text: "她调整了一下灯光，让房间里只有一盏昏黄的床头灯亮着，拿起手机，试了几个角度。" },
+        { mode: "nvl", text: "挑哪一张好呢？" },
+
 
         {
             mode: "adv", type: "choice",
             options: [
-                { text: "小心地只拍身体特写", next: "photo_safe_bed", effect: { sync: 2 } },
-                { text: "尽可能地拍得漂亮一点，要有全景", next: "bad_end_4", effect: { sync: 100 } }
+                { text: "小心地只露出一点局部特写", next: "photo_safe_bed", effect: { sync: 2 } },
+                { text: "尽可能地拍得漂亮一点，身体的姿势也要入镜", next: "bad_end_4", effect: { sync: 100 } }
             ]
         },
 
@@ -987,9 +995,33 @@ function startChapter(label) {
         { mode: "adv", name: "sana1229", text: "“那个……企鹅玩偶？”", bgm: "stop.mp3" },
         { mode: "adv", name: "sana1229", text: "“南？”" },
         { mode: "nvl", text: "名井南的血液瞬间凝固了。那是去年生日纱夏送给她的礼物，就在她的床边放着，大刺刺地出现在了照片里。全世界独一无二的定制款。" },
-        { mode: "nvl", text: "手机开始疯狂震动，屏幕上显示着【凑崎纱夏 来电】。" },
-        { mode: "nvl", text: "一切都结束了，以一种最尴尬的方式。" },
-        { mode: "nvl", text: "【Bad Ending: 社死现场】" },
+        { mode: "nvl", text: "手机开始疯狂震动，屏幕上显示着【纱夏 来电】。" },
+        { mode: "nvl", text: "她没有接听。" },
+        { mode: "nvl", text: "而意料之中地，凑崎纱夏在十分钟之后站到了她的卧室里。", bg: "minaroom_night.jpg", bgm: "bgm_quiet.mp3" },
+        
+        { mode: "nvl", text: "她的表情很难看出究竟是什么情绪，或许是因为名井南根本不敢看她的表情。" },
+        { mode: "nvl", text: "是讨厌吗？是被愚弄的愤怒吗？名井南低低地垂着头。" },
+
+        { mode: "adv", name: "凑崎纱夏", text: "“其实我一直以为……南有点讨厌我。”" },
+
+        { mode: "nvl", text: "不是的。名井南想这样说。" },
+        { mode: "nvl", text: "但她已经失去说话的勇气了，只是攥着自己的睡裙，咬着下唇一言不发。" },
+
+        { mode: "nvl", text: "她的手被握住了。" ,bg: "sana3.jpg" },
+        { mode: "nvl", text: "凑崎纱夏的掌心热乎乎，她的人也热乎乎，热乎乎的呼吸轻轻落在她的脸上，她们的距离已经很近了。" },
+
+        { mode: "adv", name: "凑崎纱夏", text: "“可是如果是南的话，真的讨厌的人，大概是不会花时间来做这种事的吧？”" },
+        { mode: "adv", name: "凑崎纱夏", text: "“南，如果不是讨厌我，或者是……或者是，像我妄想的那样，对我有一点点特别的话。”" },
+        
+        { mode: "adv", name: "凑崎纱夏", text: "“你抬起头，看看我好不好？”" },
+
+        { mode: "nvl", text: "手掌被凑崎纱夏握在手心里，背后是退无可退的自己的床，好像无论如何都必须在这一刻给出答案。" },
+        { mode: "nvl", text: "心脏在胸腔里快速地跳动着，就算没有看她，依然能够感觉到凑崎纱夏的视线落在自己的脸颊上。", sfx: "sfx_heartbeat.mp3" },
+        { mode: "nvl", text: "可以相信她吗？可以把最阴暗的、最不齿的一面暴露在她面前吗？" },
+        { mode: "nvl", text: "名井南不能确认，只是在此刻，在当下的一瞬间，她能够做的只有抬起头。" },
+        
+        { mode: "nvl", text: "她抬起头，看到凑崎纱夏的眼睛。", bgm: "bgm_daily.mp3" }, 
+        { mode: "nvl", text: "【Ture Ending: 误打误撞的全新开始】" },
         { mode: "code", action: () => unlockEnding("identity_revealed") },
         { jump: "title_return" },
 
