@@ -19,30 +19,28 @@
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
-        body { 
-    margin: 0; padding: 0; 
-    background-color: #000; 
-    font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif; 
-    height: 100vh; width: 100vw; 
-    overflow: hidden; /* 禁止滑动 */
-    position: fixed; /* 锁死页面不让乱动 */
+/* 找到 body { ... } 替换成下面这段 */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    overflow: hidden;
+    position: fixed; /* 锁死页面，防止滑动 */
 }
 
+/* 游戏容器保持不变，确认要有这段 */
 #game-container {
     width: 960px;
-    height: 540px; 
-    background: #222; 
-    
-    /* === 核心修改：绝对定位居中 === */
+    height: 540px;
+    background: #222;
     position: absolute;
     top: 50%;
     left: 50%;
-    /* 先把中心点移到正中间，后续用 JS 控制缩放 */
-    transform: translate(-50%, -50%); 
+    transform: translate(-50%, -50%); /* 初始居中 */
     transform-origin: center center;
-    
-    box-shadow: 0 0 50px rgba(0,0,0,1); 
-    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0,0,0,1);
 }
 
         /* --- 0. 基础层 --- */
@@ -1115,33 +1113,60 @@ function startChapter(label) {
         preloadAssets();
         // === 预加载结束 ===
 
-        resizeGame();
-        window.addEventListener('resize', resizeGame);
-        loadSystemData();
+        
+        // 【插入这两行】
+        loadSystemData(); // 读取存档和音量设置
+        resizeGame();     // 立即执行一次全屏适配
         
         window.addEventListener('beforeunload', () => {
              if (document.getElementById('title-screen').style.display === 'none') performSave(1);
         });
     };
 
+// === 强力适配版 resizeGame ===
 function resizeGame() {
     const container = document.getElementById('game-container');
     
-    // 获取当前窗口的宽高
-    const winW = window.innerWidth;
-    const winH = window.innerHeight;
+    // 获取当前屏幕宽高
+    // 使用 document.documentElement.clientWidth 往往比 window.innerWidth 在手机上更准
+    const winW = document.documentElement.clientWidth || window.innerWidth;
+    const winH = document.documentElement.clientHeight || window.innerHeight;
     
-    // 游戏设计的原始宽高
+    // 游戏原始尺寸
     const baseW = 960;
     const baseH = 540;
     
     // 计算缩放比例
     const scale = Math.min(winW / baseW, winH / baseH);
     
-    // === 关键在这里！===
-    // 必须把 translate(-50%, -50%) 写在前面，这样 JS 才不会把它弄丢
+    // 应用变换：先居中，再缩放
     container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    
+    // 【纠错打印】你可以打开电脑控制台看这个，确认此时读到的宽高对不对
+    console.log(`屏幕: ${winW}x${winH}, 缩放: ${scale}`);
 }
+
+// 1. 初始化时调用
+window.onload = () => {
+    // 原有的初始化逻辑...
+    if (typeof preloadAssets === 'function') preloadAssets();
+    loadSystemData();
+    // 立即执行适配
+    resizeGame();
+};
+
+// 2. 核心：监听所有可能导致尺寸变化的事件
+window.addEventListener('resize', resizeGame); // 电脑/安卓转屏主要靠这个
+window.addEventListener('orientationchange', () => {
+    // 苹果转屏有时有延迟，所以要连着试几次
+    resizeGame();
+    setTimeout(resizeGame, 100);
+    setTimeout(resizeGame, 500);
+    setTimeout(resizeGame, 1000); // 1秒后再试一次，确保万无一失
+});
+
+// 3. 额外保险：每2秒检查一次（防止某些手机浏览器底部栏突然弹出来改变高度）
+setInterval(resizeGame, 2000);
 
     function startSkip() {
         if (isChoosing || document.getElementById('title-screen').style.display !== 'none') return;
