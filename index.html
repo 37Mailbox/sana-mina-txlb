@@ -509,31 +509,61 @@ function loadSystemData() {
 
 // === 【修复】新增：章节跳转专用函数 ===
 
+// === 【修复】增强版：带初始数值的章节跳转 ===
 function startChapter(label) {
     // 1. 关闭章节选择窗口
     document.getElementById('chapter-overlay').style.display = 'none';
 
-    // 2. 重置游戏状态 (和 startGame 逻辑类似，但需要指定位置)
+    // 2. 重置游戏状态 (先恢复到全 0 状态)
     gameState = JSON.parse(JSON.stringify(initialGameState));
-    
-    // 3. 界面归位
+
+    // 3. 【核心修改】根据章节标签，注入“平均数值”
+    // 你可以在这里调整每个章节开始时的默认属性
+    switch(label) {
+        case 'ch2_start':
+            // 假设第一章玩完后的平均值
+            gameState.stats = { love: 15, lust: 15, sync: 10 };
+            break;
+            
+        case 'ch3_start':
+            // 假设第二章玩完后的平均值
+            // 你的IF线判定要求 lust > 38。
+            // 这里建议设置为 35 左右，这样玩家在第三章开头选对内衣(lust+3)
+            // 和其他选项后，刚好能凑够 40+，既有挑战性又不至于进不去。
+            gameState.stats = { love: 35, lust: 35, sync: 25 };
+            break;
+
+        case 'ch4_start': // 预留给未来章节
+            gameState.stats = { love: 50, lust: 60, sync: 40 };
+            break;
+            
+        default:
+            // 第一章或未知章节保持默认 (love:10, lust:10, sync:0)
+            break;
+    }
+
+    // 4. 界面归位
     document.getElementById('nvl-layer').style.display = 'none';
     document.getElementById('adv-box').style.opacity = '1';
     document.getElementById('history-list').innerHTML = "";
     document.getElementById('title-screen').style.display = 'none';
 
-    // 4. 寻找跳转目标
-    // 这一步非常关键：它会在剧本数组里找 label 对应的位置
+    // 5. 寻找跳转目标
     const targetIdx = script.findIndex(item => item.label === label);
     
     if (targetIdx !== -1) {
         gameState.idx = targetIdx;
-        renderScene(); // 开始渲染该章节
+        
+        // 【新增】如果是直接跳章节，最好给个提示
+        console.log(`跳转至 ${label}，当前属性已重置为:`, gameState.stats);
+        
+        renderScene(); 
     } else {
         console.error("错误：找不到章节标签 " + label);
         alert("章节跳转失败：找不到标签 " + label);
     }
 }
+
     /* =========================================
        2. 游戏剧本
        ========================================= */
