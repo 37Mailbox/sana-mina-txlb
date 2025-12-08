@@ -1929,7 +1929,7 @@ function startChapter(label) {
 // ----------------------------------------------------------------
 { label: "check_lust_requirement", mode: "code", action: () => {
     // 判定成功
-    if (gameState.stats.lust >= 45) {
+    if (gameState.stats.lust >= 42) {
         // 手动加上原本选项的数值奖励
         gameState.stats.lust += 5;
         gameState.stats.sync += 3;
@@ -2573,7 +2573,7 @@ function startChapter(label) {
 
 
 { mode: "adv", name: "凑崎纱夏", text: "“是吗？”", focus: "sana" },
-{ mode: "nvl", text: "凑崎纱夏往前走了一步,近得可以看清名井南眼睫上的细小绒毛。", hide: ["sana"] },
+{ mode: "nvl", text: "凑崎纱夏往前走了一步,近得可以看清名井南脸颊上的细小绒毛。", hide: ["sana"] },
 { mode: "adv", name: "凑崎纱夏", text: "“我以为你会睡不着。”", show: ["sana"], focus: "sana" },
 
 { mode: "nvl", text: "名井南没有说话,但她的呼吸明显变得急促了一些。凑崎纱夏看着她的反应,心里涌起一股奇怪的快感。" },
@@ -2599,7 +2599,7 @@ function startChapter(label) {
 
 { mode: "nvl", text: "名井南的呼吸彻底乱了。她微微仰起头,眼眶里泛起一层薄薄的水光,嘴唇张开又闭上,像是想说什么却又说不出口。", show: ["mina"], focus: "mina", hide: ["mina"] },
 
-{ mode: "adv", name: "凑崎纱夏", text: "“南。”", show: ["sana"], focus: "sana" },
+{ mode: "adv", name: "凑崎纱夏", text: "“南。”", bg: "couple.jpg"},
 { mode: "nvl", text: "凑崎纱夏凑近了一些,鼻尖几乎要碰到她的脸颊。", hide: ["sana"] },
 { mode: "adv", name: "凑崎纱夏", text: "“你有什么想告诉我的吗？”", show: ["sana"], focus: "sana" },
 
@@ -2680,7 +2680,7 @@ function startChapter(label) {
 
 { mode: "nvl", text: "名井南的腿很细,皮肤很滑,膝盖上方因为常年盖在裙摆下,比别的地方更白一点。凑崎的手指往上移了一点,钻进裙摆里,碰到最私密的衣料的边缘。" },
 
-{ mode: "adv", name: "凑崎纱夏", text: "“南,”", show: ["sana"], focus: "sana" },
+{ mode: "adv", name: "凑崎纱夏", text: "“南。”", show: ["sana"], focus: "sana" },
 { mode: "nvl", text: "她轻声叫。", hide: ["sana"] },
 { mode: "adv", name: "凑崎纱夏", text: "“我可以……”", show: ["sana"], focus: "sana" },
 
@@ -3051,7 +3051,7 @@ function startChapter(label) {
 
 
 // === 结局标记 ===
-{ mode: "nvl", text: "—— True Ending: 沉沦 ——", bgm: "bgm_memory.mp3" },
+{ mode: "nvl", text: "—— True Ending: 沉沦 ——" },
 {
     mode: "adv", type: "choice",
     options: [
@@ -3327,7 +3327,7 @@ function startChapter(label) {
 { mode: "adv", name: "凑崎纱夏", text: "“只管跳下来吧，我会接住你的。”" },
 
 // === 结局标记 ===
-{ mode: "nvl", text: "—— True Ending: 跳下来吧 ——", bgm: "bgm_tense.mp3" },
+{ mode: "nvl", text: "—— Happy Ending: 跳下来吧 ——"},
 {
     mode: "adv", type: "choice",
     options: [
