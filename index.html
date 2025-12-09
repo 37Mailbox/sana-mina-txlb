@@ -273,11 +273,35 @@ html, body {
         .title-btn:hover { background: var(--sana-main); border-color: var(--sana-deep); color: var(--sana-deep); transform: scale(1.02); }
         .start-btn { background: #333; color: #fff; border: none; font-size: 18px; padding: 15px; }
         .start-btn:hover { background: var(--sana-deep); color: #fff; }
-
+/* --- 7. 加载界面样式 --- */
+#loading-screen {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #000;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    transition: opacity 0.5s;
+}
+.loading-text { color: #fff; font-size: 24px; margin-bottom: 20px; font-family: sans-serif; }
+.progress-bar-bg {
+    width: 60%; max-width: 400px; height: 6px;
+    background: #333; border-radius: 3px; overflow: hidden;
+}
+.progress-bar-fill {
+    width: 0%; height: 100%;
+    background: var(--sana-deep); /* 使用你定义的紫色 */
+    transition: width 0.2s;
+}
     </style>
 </head>
 
 <body>
+
+<div id="loading-screen">
+    <div class="loading-text" id="loading-txt">正在加载中... 0%</div>
+    <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="loading-bar"></div>
+    </div>
+</div>
 
 <div id="game-container">
     <div class="bg-layer"></div>
@@ -784,7 +808,7 @@ function startChapter(label) {
         {
             mode: "adv", type: "choice",
             options: [
-                { text: "进入下一章：靠近的距离", next: "ch2_start" }, 
+                { text: "进入下一章：不是的，只有你", next: "ch2_start" }, 
                 { text: "返回标题画面", next: "title_return" }
             ]
         }, 
@@ -3338,7 +3362,7 @@ function startChapter(label) {
     ]; // <--- 确保这行 ] 依然是整个数组的结尾
 
     
- /* =========================================
+ /* =/* =========================================
        3. 核心引擎 (修复版：解决点击无效问题)
        ========================================= */
     
@@ -3349,44 +3373,75 @@ function startChapter(label) {
     let skipInterval = null;
     let longPressTimer = null;
 
+    // 【新增】防止重复初始化的变量 (请确保这行代码在 initGame 函数外面)
+    let isGameInitialized = false; 
+
     // === 【核心修复】初始化函数：统一挂载所有功能 ===
     function initGame() {
+        // 1. 防止重复运行
+        if (isGameInitialized) return; 
+        isGameInitialized = true;      
+
+        console.log("游戏初始化..."); 
+
         const container = document.getElementById('game-container');
         let isTouch = false;
 
-        // 1. 定义交互处理函数
+        // 2. 定义交互处理函数
         const handleInteraction = (e) => {
+            // 如果已经在快进中，或者正在选选项，或者菜单打开了，就不处理
+            if (isSkipping || isChoosing || document.getElementById('menu-overlay').style.display === 'flex') return;
+
             const target = e.target;
-            // 防误触保护：如果点到了按钮、菜单等，就不触发剧情推进
+            // 防误触保护：如果点到了按钮等UI，不触发剧情
             if (target.closest('button') || target.closest('.chapter-card') || 
                 target.closest('.lib-branch-btn') || target.closest('.settings-box') || 
-                target.closest('.choice-btn') || target.closest('.slot-card') ||
-                document.getElementById('menu-overlay').style.display === 'flex') return;
+                target.closest('.choice-btn') || target.closest('.slot-card')) return;
             
-            longPressTimer = setTimeout(startSkip, 400);
+            // 清除旧的定时器（防止叠加）
+            clearTimeout(longPressTimer);
+            
+            // 400毫秒后触发快进
+            longPressTimer = setTimeout(() => {
+                startSkip();
+            }, 400);
         };
 
         const handleEnd = (e) => {
+            // 无论如何，手指抬起时立刻清除定时器！
             clearTimeout(longPressTimer);
+            longPressTimer = null; 
+
             if (isSkipping) {
                 stopSkip();
             } else {
                 const target = e.target;
-                // 再次检查防误触
-                if (!target.closest('button') && !target.closest('.chapter-card') && !target.closest('.end-card') && !target.closest('.lib-branch-btn') && !target.closest('.setting-slider') && !target.closest('.choice-btn')) {
+                // 再次检查防误触，执行普通点击
+                if (!target.closest('button') && !target.closest('.chapter-card') && 
+                    !target.closest('.lib-branch-btn') && !target.closest('.setting-slider') && 
+                    !target.closest('.choice-btn') && 
+                    document.getElementById('menu-overlay').style.display !== 'flex') {
+                    
                     handleClick();
                 }
             }
         };
 
-        // 2. 挂载点击事件监听器 (鼠标 + 触摸)
+        // 3. 挂载点击事件监听器 (鼠标 + 触摸)
         container.addEventListener('mousedown', (e) => { 
             if(isTouch) return;
             if(e.button===0) handleInteraction(e); 
         });
+        
         container.addEventListener('mouseup', (e) => {
             if(isTouch) return;
             handleEnd(e);
+        });
+
+        // 增加鼠标移出保护
+        container.addEventListener('mouseleave', () => {
+            clearTimeout(longPressTimer);
+            if (isSkipping) stopSkip();
         });
 
         container.addEventListener('touchstart', (e) => { 
@@ -3399,38 +3454,13 @@ function startChapter(label) {
             setTimeout(() => isTouch = false, 500);
         });
 
-        // 3. 资源预加载
-        const preloadAssets = () => {
-            const images = [];
-            // 提取背景图
-            script.forEach(line => {
-                if (line.bg && !line.bg.startsWith('#')) images.push(line.bg);
-            });
-            // 提取立绘
-            images.push(
-                'https://via.placeholder.com/400x800/f9e4ff/9d72b0?text=Sana',
-                'https://via.placeholder.com/400x800/c4ffdd/56ab83?text=Mina'
-            );
-            // 开始加载
-            images.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
-        };
-        preloadAssets();
-
         // 4. 读取存档并全屏适配
         loadSystemData();
         resizeGame();
         
-    }
-
-    // === 【关键】使用 DOMContentLoaded 确保代码尽早运行，不用等图片下载完 ===
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initGame);
-    } else {
-        initGame();
-    }
+        // 游戏初始化完成，隐藏加载层（双重保险）
+        document.getElementById('loading-screen').style.display = 'none';
+}
 
 function resizeGame() {
     const container = document.getElementById('game-container');
@@ -3455,14 +3485,103 @@ function resizeGame() {
 }
 
 // 1. 初始化时调用
-window.onload = () => {
-    // 原有的初始化逻辑...
-    if (typeof preloadAssets === 'function') preloadAssets();
-    loadSystemData();
-    // 立即执行适配
-    resizeGame();
-};
+/* =========================================
+   资源预加载系统
+   ========================================= */
 
+// 收集所有需要预加载的图片链接
+function getAllAssets() {
+    const assets = new Set(); // 使用 Set 去重
+
+    // 1. 提取剧本里的背景图 (bg)
+    script.forEach(line => {
+        // 排除纯色背景 (以 # 开头的)
+        if (line.bg && !line.bg.startsWith('#')) {
+            assets.add(line.bg);
+        }
+        // 如果你有 CG 字段，也要加进来
+    });
+
+    // 2. 手动添加立绘图片 (因为它们写在 CSS 里，JS 读不到，需要手动列出)
+    assets.add('https://via.placeholder.com/400x800/f9e4ff/9d72b0?text=Sana');
+    assets.add('https://via.placeholder.com/400x800/c4ffdd/56ab83?text=Mina');
+    
+    // 3. 如果有重要的 UI 图片素材，也加在这里
+    // assets.add('images/ui_textbox.png');
+
+    return Array.from(assets);
+}
+
+function startPreload() {
+    const images = getAllAssets();
+    let loadedCount = 0;
+    const total = images.length;
+    
+    const txt = document.getElementById('loading-txt');
+    const bar = document.getElementById('loading-bar');
+    const screen = document.getElementById('loading-screen');
+
+    // 如果没有图片，直接开始
+    if (total === 0) {
+        screen.style.display = 'none';
+        initGame();
+        return;
+    }
+
+    // 开始遍历加载
+    images.forEach(src => {
+        const img = new Image();
+        
+        // 无论加载成功还是失败，都算作完成（防止一张图挂了导致卡死在 99%）
+        img.onload = img.onerror = () => {
+            loadedCount++;
+            
+            // 计算百分比
+            const percent = Math.floor((loadedCount / total) * 100);
+            
+            // 更新 UI
+            if(txt) txt.innerText = `正在加载中... ${percent}%`;
+            if(bar) bar.style.width = `${percent}%`;
+
+            // 全部加载完毕
+            if (loadedCount === total) {
+                setTimeout(() => {
+                    // 淡出效果
+                    screen.style.opacity = '0';
+                    setTimeout(() => {
+                        screen.style.display = 'none';
+                        // 这里才真正开始游戏初始化
+                        initGame();
+                    }, 500);
+                }, 200); // 稍微停顿一下让人看清 100%
+            }
+        };
+
+        // 触发加载
+        img.src = src;
+    });
+}
+
+// === 修改启动入口 ===
+
+// 1. 移除原来的 window.onload 和 DOMContentLoaded 里直接调用的 initGame
+// 2. 替换为下面的代码：
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // 先适配屏幕
+        resizeGame();
+        // 开始预加载，预加载完成后会自动调用 initGame
+        startPreload();
+    });
+} else {
+    resizeGame();
+    startPreload();
+}
+
+// 保持 resize 监听不变
+window.addEventListener('resize', resizeGame);
+window.addEventListener('orientationchange', resizeGame);
 // 2. 核心：监听所有可能导致尺寸变化的事件
 window.addEventListener('resize', resizeGame); // 电脑/安卓转屏主要靠这个
 window.addEventListener('orientationchange', () => {
