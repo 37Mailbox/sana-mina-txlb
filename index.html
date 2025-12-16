@@ -4289,13 +4289,40 @@ function renderSlots() {
         }
     }
 
+    // === 【优化】软复位：回到标题而不刷新网页 ===
     function quitTitle() {
         if(confirm("确定要返回标题画面吗？(未保存的进度将丢失)")) {
-            stopAllAudio(); 
-            location.reload();
+            // 1. 停止所有声音
+            stopAllAudio();
+            
+            // 2. 执行回到标题的逻辑
+            backToTitleScreen();
         }
     }
 
+    // 新增：专门处理“回到标题”的逻辑函数
+    function backToTitleScreen() {
+        // 1. 隐藏所有弹窗和菜单
+        document.getElementById('menu-overlay').style.display = 'none';
+        document.getElementById('choice-overlay').style.display = 'none';
+        
+        // 2. 隐藏游戏界面元素
+        document.getElementById('nvl-layer').style.display = 'none';
+        document.getElementById('adv-box').style.opacity = '0'; // 隐藏对话框
+        
+        // 3. 隐藏所有立绘
+        document.querySelectorAll('.char-img').forEach(el => el.style.display = 'none');
+        
+        // 4. 重置背景为默认黑色（防止上一张图残留在标题后面）
+        const bgDiv = document.querySelector('.bg-layer');
+        bgDiv.style.backgroundImage = 'none';
+        bgDiv.style.backgroundColor = '#333';
+
+        // 5. 显示标题画面
+        document.getElementById('title-screen').style.display = 'flex';
+        
+        // 注意：这里不需要重置 gameState，因为点击“开始物语”时，startGame() 会自动重置它。
+    }
     function showStats() {
         document.getElementById('val-love').innerText = gameState.stats.love;
         document.getElementById('val-lust').innerText = gameState.stats.lust;
